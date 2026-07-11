@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@media print {
+  /* Print ke waqt main dashboard ke headers aur navbars ko bilkul chhipa do */
+  .no-print, 
+  nav, 
+  header, 
+  footer,
+  button {
+    display: none !important;
+  }
+
+  /* Invoice wrapper ko poori screen par width do taake text na kate */
+  body, html, #__next, main {
+    background: white !important;
+    color: black !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+:root {
+  --background: #f9fafb;
+  --foreground: #111827;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #030712;
+    --foreground: #f9fafb;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* ----------------------------------------------------------------------
+   Global print rules. Anything marked .no-print (e.g. the Navbar,
+   sidebars, action buttons) is hidden when printing from ANY page —
+   not just the InvoicePrint component, which has its own scoped
+   @media print rules for the invoice page itself.
+   ---------------------------------------------------------------------- */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}

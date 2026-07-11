@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")   // pooled connection (pgbouncer), used at runtime
+  directUrl = env("DIRECT_URL")     // direct connection, used only for migrations/db push
+}
+
+model Invoice {
+  id     String @id @default(uuid())
+  userId String // Supabase auth.users.id (UUID) of the invoice's owner
+
+  // Denormalized snapshot of the creator's email, captured at insert
+  // time. Prisma has no relation into Supabase's auth.users table (it
+  // lives in a separate schema Prisma doesn't manage), so this is the
+  // simplest way to show "created by" without a service-role admin
+  // API call on every list request.
+  userEmail String
+
+  invoiceNumber   String
+  posId           String?
+  invoiceDateTime DateTime @default(now())
+  invoiceType     String
+  paymentMode     String
+  currency        String   @default("PKR")
+
+  // Buyer details (flattened from BuyerDetails in invoice.ts)
+  buyerName             String
+  buyerEmail            String?
+  buyerPhone            String?
+  buyerNTNCNIC          String
+  buyerRegistrationType String
+  buyerAddress          String?
+  buyerProvince         String?
+
+  // Seller details are optional and less frequently queried, so kept as JSON
+  seller Json?
+
+  // Totals (flattened from InvoiceTotals in invoice.ts)
+  totalExclusiveOfTax Float
+  totalDiscount       Float
+  totalSalesTax       Float
+  totalFurtherTax     Float
+  totalExtraOrFed     Float
+  netPayable          Float
+  totalItemsCount     Int
+
+  remarks             String?
+  fbrInvoiceRefNo     String?
+  scenarioId          String?
+  qrCode              String?
+  fbrSubmissionStatus String?
+  fbrErrorMessage     String?
+
+  items LineItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Each user manages their own invoice numbering, so uniqueness is
+  // scoped per user rather than global.
+  @@unique([userId, invoiceNumber])
+  @@index([userId])
+  @@map("invoices")
+}
+
+model LineItem {
+  id        String  @id @default(uuid())
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  itemSKU              String
+  itemName             String
+  description          String?
+  hsCode               String?
+  unitOfMeasurement    String
+  quantity             Float
+  unitPrice            Float
+  currency             String  @default("PKR") // per-line-item currency: PKR, USD, EUR, AED
+  discountAmount       Float
+  exclusiveOfTaxAmount Float
+  salesTaxRate         Float
+  salesTaxAmount       Float
+  furtherTaxAmount     Float?
+  extraOrFedAmount     Float?
+  totalNetAmount       Float
+  sroScheduleNo        String?
+  sroItemSerialNo      String?
+
+  @@map("line_items")
+}
