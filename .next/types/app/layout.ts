@@ -1,4 +1,4 @@
-// File: D:\Awais\5th Smester\Daraz\Invoice App - Copy\src\app\layout.js
+// File: D:\Awais\5th Smester\Criticpick Project\Invoice-app\src\app\layout.js
 import * as entry from '../../../src/app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
