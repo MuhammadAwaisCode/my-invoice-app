@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = 'force-dynamic';
 import InvoiceBuilder from "@/components/InvoiceBuilder/InvoiceBuilder";
 
 export default function Home() {
